@@ -1,0 +1,69 @@
+services:
+  postgres:
+    image: postgres:16
+    container_name: figma_postgres_primary
+    environment:
+      POSTGRES_DB: figma_db
+      POSTGRES_USER: figma_user
+      POSTGRES_PASSWORD: figma_pass
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./database/init.sql:/docker-entrypoint-initdb.d/init.sql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U figma_user -d figma_db"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  backend:
+    build:
+      context: ./backend
+    container_name: figma_laravel_backend
+    ports:
+      - "8000:8000"
+    volumes:
+      # Mount source only
+      - ./backend:/var/www
+      # Keep vendor inside container
+      - /var/www/vendor
+    environment:
+      DB_CONNECTION: pgsql
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_DATABASE: figma_db
+      DB_USERNAME: figma_user
+      DB_PASSWORD: figma_pass
+    depends_on:
+      postgres:
+        condition: service_healthy
+    command: php artisan serve --host=0.0.0.0 --port=8000
+
+  frontend:
+    build:
+      context: ./frontend
+    container_name: figma_vue_frontend
+    ports:
+      - "3000:3000"
+    volumes:
+      # Mount source only
+      - ./frontend:/app
+      # Keep node_modules inside container
+      - /app/node_modules
+    environment:
+      VITE_API_URL: http://localhost:8000
+    command: npm run dev -- --host 0.0.0.0
+
+  loadgen:
+    build:
+      context: ./loadgen
+    container_name: figma_load_generator
+    depends_on:
+      - backend
+    command: python loadgen.py
+    profiles:
+      - loadtest
+
+volumes:
+  postgres_data:
