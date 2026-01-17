@@ -27,7 +27,7 @@ Route::prefix('v1')->group(function () {
     Route::get('files/{id}', [FileController::class, 'show']);
     Route::put('files/{id}', [FileController::class, 'update']);
     Route::delete('files/{id}', [FileController::class, 'destroy']);
-    Route::post('files/{id}/view', [FileController::class, 'incrementView']);
+    Route::post('files/{file}/view', [FileController::class, 'incrementView']);
     
     // Comments
     Route::get('files/{fileId}/comments', [CommentController::class, 'index']);

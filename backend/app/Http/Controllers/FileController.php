@@ -112,21 +112,20 @@ class FileController extends Controller
     
     public function incrementView(Request $request, string $id)
     {
-        $file = File::findOrFail($id);
-        
-        DB::transaction(function () use ($file, $request) {
-            $file->increment('view_count');
-            
-            // Log activity (hot path - this will generate tons of writes)
-            ActivityLog::create([
-                'user_id' => $request->input('user_id'),
-                'file_id' => $file->id,
-                'action' => 'viewed',
-                'ip_address' => $request->ip(),
-                'user_agent' => $request->userAgent()
-            ]);
-        });
-        
-        return response()->json(['view_count' => $file->view_count]);
+        $updated = File::where('id', $id)->increment('view_count');
+
+        if (!$updated) {
+            return response()->json(['ignored' => true], 200);
+        }
+
+        ActivityLog::create([
+            'user_id' => $request->input('user_id'),
+            'file_id' => $id,
+            'action' => 'viewed',
+            'ip_address' => $request->ip(),
+            'user_agent' => $request->userAgent(),
+        ]);
+
+        return response()->json(['ok' => true]);
     }
 }
