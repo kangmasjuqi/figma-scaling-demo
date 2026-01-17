@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Load Generator for Figma Scale Demo - Phase 0
+Load Generator for Figma Scaling Demo - Phase 0
 Simulates realistic user traffic patterns
 """
 
@@ -10,8 +10,9 @@ import random
 import time
 from datetime import datetime
 import argparse
+import os
 
-API_URL = "http://localhost:8000/api/v1"
+API_URL = os.getenv("API_URL", "http://backend:8000/api/v1")
 
 class LoadGenerator:
     def __init__(self, concurrency=10, duration=300, read_write_ratio=0.8):
@@ -41,6 +42,8 @@ class LoadGenerator:
                     return await response.json(), latency
                 else:
                     self.stats['failed'] += 1
+                    text = await response.text()
+                    print(f"🔥 SERVER ERROR {method} {endpoint}: {text[:200]}")
                     print(f"❌ {method} {endpoint} - Status {response.status}")
                     return None, latency
         except Exception as e:
@@ -129,7 +132,7 @@ class LoadGenerator:
         """Run load test"""
         print(f"""
 ╔══════════════════════════════════════════════════════════╗
-║         Figma Scale Demo - Load Generator                ║
+║         Figma Scaling Demo - Load Generator                ║
 ╚══════════════════════════════════════════════════════════╝
 
 Configuration:
