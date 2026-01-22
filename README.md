@@ -11,3 +11,29 @@ https://www.linkedin.com/posts/alexandre-zajac_figma-scaled-to-40m-users-not-wit
 <img width="2292" height="2874" alt="screencapture-localhost-3000-2026-01-15-11_05_18" src="https://github.com/user-attachments/assets/eec2c2b4-f778-432d-a539-d889824d950b" />
 <img width="2292" height="2258" alt="screencapture-localhost-3000-2026-01-15-11_05_46" src="https://github.com/user-attachments/assets/c47e4581-a762-4352-a3a0-0c5c0edc98a8" />
 
+
+### Test & Monitoring
+
+#### Run load test in terminal:
+
+    docker compose run --rm loadgen python loadgen.py \
+        --concurrency 50 \
+        --duration 300 \
+        --read-ratio 0.7
+
+#### Watch the graphs update in real-time!
+
+DB 
+
+    docker stats figma_postgres_primary
+
+Grafana 
+
+    http://localhost:3001/
+    
+    username : admin
+    password : admin
+
+Prometheus
+
+    http://localhost:9090/
