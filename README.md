@@ -78,3 +78,13 @@ Prometheus
     Performance:
     • QPS: 100.27
     • Avg Latency: 1757.19ms
+
+## TODOS
+
+### Phase 1 -> Read Replicas
+### Phase 2 -> Connection Pooling (PgBouncer)
+### Phase 3 -> Vertical Partitioning
+### Phase 4 -> Horizontal Sharding
+### Phase 5 -> Logical Sharding
+### Phase 6 -> Physical Sharding
+
